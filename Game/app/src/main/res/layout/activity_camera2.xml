@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextureView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/textureView"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            xmlns:android="http://schemas.android.com/apk/res/android">
+        </TextureView>
+    </FrameLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:srcCompat="@drawable/radar"
+        android:id="@+id/radar"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:srcCompat="@drawable/ic_favorite_black_24dp"
+            android:id="@+id/heart1"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="16dp"
+            android:outlineProvider="bounds"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:srcCompat="@drawable/ic_favorite_black_24dp"
+            android:id="@+id/heart2"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="16dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:srcCompat="@drawable/ic_favorite_black_24dp"
+            android:id="@+id/heart3"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        fab:fab_addButtonColorNormal="@color/green"
+        fab:fab_addButtonColorPressed="@color/green_pressed"
+        fab:fab_addButtonPlusIconColor="@color/yellow">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_location_on_black_24dp"
+            fab:fab_colorNormal="@color/yellow"
+            fab:fab_size="normal"
+            fab:fab_colorPressed="@color/yellow_pressed"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_chat_bubble_black_24dp"
+            fab:fab_colorNormal="@color/yellow"
+            fab:fab_size="normal"
+            fab:fab_colorPressed="@color/yellow_pressed"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_assignment_black_24dp"
+            fab:fab_colorNormal="@color/yellow"
+            fab:fab_size="normal"
+            fab:fab_colorPressed="@color/yellow_pressed"/>
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+</RelativeLayout>
