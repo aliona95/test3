@@ -6,7 +6,10 @@ android {
     defaultConfig {
         applicationId "com.example.game"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 19
+
+        multiDexEnabled true
+
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -17,6 +20,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/fonts'] } }
 }
 
 dependencies {

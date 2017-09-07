@@ -1,6 +1,7 @@
 package com.example.game;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,9 @@ public class MenuActivity extends AppCompatActivity {
     Button settingsButton;
     Button aboutButton;
 
+    Typeface tfc1;
+    Typeface tfc2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +25,14 @@ public class MenuActivity extends AppCompatActivity {
         playButton = (Button) findViewById(R.id.play);
         settingsButton = (Button) findViewById(R.id.settings);
         aboutButton = (Button) findViewById(R.id.about);
+
+
+        tfc1 = Typeface.createFromAsset(getAssets(), "fonts/Colored Crayons.ttf");
+        playButton.setTypeface(tfc1);
+        //tfc2 = Typeface.createFromAsset(getAssets(), "fonts/OperatingInstructions.ttf");
+        //settingsButton.setTypeface(tfc2);
+
+
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
@@ -52,3 +64,6 @@ public class MenuActivity extends AppCompatActivity {
         aboutButton.setOnClickListener(onClickListener);
     }
 }
+
+
+

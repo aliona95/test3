@@ -9,10 +9,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class ShakeActivity extends Activity implements SensorEventListener{
+public class ShakeActivity extends Activity implements SensorEventListener {
 /*
     private ShakeDetector mShakeDetector;
     private SensorManager mSensorManager;
@@ -69,7 +72,14 @@ public class ShakeActivity extends Activity implements SensorEventListener{
         super.onPause();
     }*/
 
+
+
+
+    ////////////////////////////////////////////////
+
+
     private SensorManager senSensorManager;
+    private ProgressBar firstBar = null;
     private Sensor senAccelerometer;
     String color = "blue";
 
@@ -77,15 +87,26 @@ public class ShakeActivity extends Activity implements SensorEventListener{
     private float last_x, last_y, last_z;
     private static final int SHAKE_THRESHOLD = 600;
 
+    TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shake);
+
+        textView = (TextView) findViewById(R.id.xAxis);
+
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(this, senAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
         final RelativeLayout rl = (RelativeLayout)findViewById(R.id.RelativeLayout02);
         rl.setBackgroundColor(Color.rgb(190, 238, 233));
+
+        firstBar = (ProgressBar)findViewById(R.id.firstBar);
+        firstBar.setVisibility(View.VISIBLE);
+        firstBar.setMax(10);
+
+        firstBar.setProgress(0);
     }
 
     @Override
@@ -108,7 +129,7 @@ public class ShakeActivity extends Activity implements SensorEventListener{
                 float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000/2;
                 Log.i("TAG", "SPEED " + speed);
                 if (speed > SHAKE_THRESHOLD) {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Įrenginys pajudintas. Greitis: " + speed, Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(), "Įrenginys pajudintas. Greitis: " + speed, Toast.LENGTH_SHORT);
                     toast.show();
                     if (color.equals("blue")) {
                         rl.setBackgroundColor(Color.rgb(255, 220, 171));
@@ -123,6 +144,13 @@ public class ShakeActivity extends Activity implements SensorEventListener{
                 last_x = x;
                 last_y = y;
                 last_z = z;
+
+                textView.setText(Float.toString(last_x));
+                if (last_x < 0){
+                    firstBar.setProgress(Math.abs(Math.round(last_x)));
+                }
+
+
             }
         }
     }
@@ -142,3 +170,49 @@ public class ShakeActivity extends Activity implements SensorEventListener{
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 }
+
+
+
+    /*
+    
+    private ProgressBar firstBar = null;
+    private Button myButton;
+    private int i = 0;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_shake);
+
+        firstBar = (ProgressBar)findViewById(R.id.firstBar);
+        firstBar.setVisibility(View.VISIBLE);
+        firstBar.setProgress(66);
+        myButton = (Button)findViewById(R.id.myButton);
+        myButton.setOnClickListener(new ButtonListener());
+
+    }
+
+    class ButtonListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            if (i == 0 || i == 10) {
+                //make the progress bar visible
+                //firstBar.setVisibility(View.VISIBLE);
+                firstBar.setMax(150);
+            }else if (i < firstBar.getMax()) {
+                //Set first progress bar value
+                firstBar.setProgress(i);
+                //Set the second progress bar value
+                firstBar.setSecondaryProgress(i + 10);
+            }else {
+                firstBar.setProgress(0);
+                firstBar.setSecondaryProgress(0);
+                i = 0;
+                firstBar.setVisibility(View.GONE);
+            }
+            i =+ 10;
+        }
+    }
+}
+*/

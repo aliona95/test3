@@ -1,7 +1,12 @@
 package com.example.game;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -16,10 +21,14 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -28,7 +37,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class Camera2Activity extends AppCompatActivity {
+public class Camera2Activity extends AppCompatActivity implements SensorEventListener {
 
     private CameraDevice mCameraDevice = null;
     private CaptureRequest.Builder mCaptureRequestBuilder = null;
@@ -36,12 +45,50 @@ public class Camera2Activity extends AppCompatActivity {
     private TextureView mTextureView = null;
     private Size mPreviewSize = null;
 
+    private int maxThrowingForce = 0;
+
+    private SensorManager senSensorManager;
+    private ProgressBar firstBar = null;
+    private Sensor senAccelerometer;
+
+    private TextView textViewThrowing;
+    private Button throwingButton;
+
+    private long lastUpdate = 0;
+    private float last_x, last_y, last_z;
+    private static final int SHAKE_THRESHOLD = 600;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera2);
 
-        Toast.makeText(Camera2Activity.this, "Nėra duomenų", Toast.LENGTH_LONG).show();
+
+        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
+        //final RelativeLayout rl = (RelativeLayout)findViewById(R.id.RelativeLayout02);
+        //rl.setBackgroundColor(Color.rgb(190, 238, 233));
+
+        firstBar = (ProgressBar)findViewById(R.id.firstBar);
+
+
+        textViewThrowing = (TextView) findViewById(R.id.textViewThrowing);
+        throwingButton = (Button) findViewById(R.id.throwingButton);
+        throwingButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                firstBar.setVisibility(View.VISIBLE);
+                firstBar.setMax(10);
+                //firstBar.setProgress(0);
+                //firstBar.setProgress(3);
+                throwingButton.setVisibility(View.INVISIBLE);
+                textViewThrowing.setVisibility(View.INVISIBLE);
+                }
+            });
+
+
+
+        //Toast.makeText(Camera2Activity.this, "Nėra duomenų", Toast.LENGTH_LONG).show();
 
         mTextureView = (TextureView) findViewById(R.id.textureView);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
@@ -152,6 +199,9 @@ public class Camera2Activity extends AppCompatActivity {
             mCameraDevice.close();
             mCameraDevice = null;
         }
+
+        //senSensorManager.unregisterListener(this);
+
     }
     @Override
     public void onResume() {
@@ -162,6 +212,9 @@ public class Camera2Activity extends AppCompatActivity {
             mTextureView.setSurfaceTextureListener(
                     mSurfaceTextureListener);
         }
+
+        //senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
     }
 
     private void openCamera() {
@@ -192,4 +245,62 @@ public class Camera2Activity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Sensor mySensor = sensorEvent.sensor;
+        //final RelativeLayout rl = (RelativeLayout)findViewById(R.id.RelativeLayout02);
+        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
+
+            long curTime = System.currentTimeMillis();
+
+            if ((curTime - lastUpdate) > 200) {
+                long diffTime = (curTime - lastUpdate);
+                Log.i("TAG", "LAIKAAAAAAS " + diffTime);
+
+                lastUpdate = curTime;
+
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000/2;
+                Log.i("TAG", "SPEED " + speed);
+                if (speed > SHAKE_THRESHOLD) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Įrenginys pajudintas. Greitis: " + speed, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+                last_x = x;
+                last_y = y;
+                last_z = z;
+
+
+                if (last_x < 0){
+                    firstBar.setProgress(Math.abs(Math.round(last_x)));
+                    if (maxThrowingForce < Math.abs(Math.round(last_x))){
+                        maxThrowingForce = Math.abs(Math.round(last_x));
+                        textViewThrowing.setVisibility(View.INVISIBLE);
+                    } else if (maxThrowingForce - Math.abs(Math.round(last_x)) > 2){
+                        // METYMAS, kelias sekundes pastabdyti, tada isjungti, ir kad vel galima butu metyti
+                        maxThrowingForce = 0;
+                        //textViewThrowing.setVisibility(View.VISIBLE);
+
+                        if(throwingButton.getVisibility() == View.INVISIBLE) {
+                            textViewThrowing.setVisibility(View.VISIBLE);
+                        }
+
+                        firstBar.setVisibility(View.INVISIBLE);
+                        //firstBar.setProgress(0);
+                        throwingButton.setVisibility(View.VISIBLE);
+
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
 }
+
